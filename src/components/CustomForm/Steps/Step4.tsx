@@ -7,23 +7,30 @@ import { useState } from 'react';
 
 const Step4 = ({ data }: { data: FormData }) => {
     const navigate = useNavigate();
-    const [success, setSuccess] = useState(false);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const handleSubmit = async () => {
+        setLoading(true);
+        setErrorMsg(null);
         const dataToSend = formatFormData(data);
 
         try {
             await axios.post('http://localhost:5000/submit-form', dataToSend);
-            setSuccess(true);
-            // wait 1.5 seconds before redirect
-            setTimeout(() => navigate('/'), 1500);
+            await new Promise((r) => setTimeout(r, 1000));
+            setLoading(true);
+            navigate('/');
         } catch (err) {
             const error = err as AxiosError<{ message?: string }>;
             if (error.response) {
-                console.error('Error response:', error.response.data);
+                setErrorMsg(error.response.data.message || 'Server responded with an error.');
+            } else if (error.request) {
+                setErrorMsg('Cannot connect to the server. Please check your connection or server status.');
             } else {
-                console.error('Error submitting form:', error.message);
+                setErrorMsg(error.message);
             }
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -36,7 +43,7 @@ const Step4 = ({ data }: { data: FormData }) => {
                 <rect opacity='0.5' x='114.73' y='107.485' width='36.5935' height='36.5935' rx='8' fill='#DEDBFF' />
                 <circle cx='83.9199' cy='79.0391' r='60' fill='#4A3AFF' />
                 <g filter='url(#filter0_d_901_14136)'>
-                    <path d='M61.2031 82.2843L74.1836 95.2648L106.635 62.8135' stroke='white' stroke-width='8' stroke-linecap='round' stroke-linejoin='round' />
+                    <path d='M61.2031 82.2843L74.1836 95.2648L106.635 62.8135' stroke='white' strokeWidth='8' strokeLinecap='round' strokeLinejoin='round' />
                 </g>
                 <defs>
                     <filter id='filter0_d_901_14136' x='27.2031' y='32.8135' width='113.432' height='100.451' filterUnits='userSpaceOnUse' color-interpolation-filters='sRGB'>
@@ -53,9 +60,16 @@ const Step4 = ({ data }: { data: FormData }) => {
             <div className='text-center flex flex-col items-center'>
                 <h2 className='font-bold text-2xl mb-3'>Submit your quote request</h2>
                 <p className='mb-9'>Please review all the information you previously typed in the past steps, and if all is okay, submit your message to receive a project quote in 24 - 48 hours.</p>
-                <CustomButton label='Submit' buttonType='primary' onClick={handleSubmit} />
-                {success && (
-                    <p className='mt-4 text-green-600 text-xl'>Submission successful! Will redirect in a milisecond...</p>
+                <CustomButton
+                    label={loading ? 'Submitting...' : 'Submit'}
+                    isDisabled={loading}
+                    buttonType='primary'
+                    onClick={handleSubmit}
+                />
+                {errorMsg && (
+                    <p className='mt-4 text-red-600 text-xl'>
+                        {errorMsg}
+                    </p>
                 )}
             </div>
         </div>

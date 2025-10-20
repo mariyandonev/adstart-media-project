@@ -5,7 +5,7 @@ import { Step1, Step2, Step3, Step4 } from './Steps';
 import { useForm } from '../../context';
 
 const CustomForm = () => {
-    const [stepCount, setStepCount] = useState(0);
+    const [stepCount, setStepCount] = useState<number>(0);
     const { formData, updateStepData, hasError } = useForm();
 
     const handleNextStep = () => {
@@ -43,7 +43,7 @@ const CustomForm = () => {
                         onClick={handleBackStep}
                         label='Previous step'
                         buttonType='secondary'
-                        classes='w-full sm:w-auto'
+                        classes='p-5'
                     />
                 }
                 {stepCount !== 3 &&

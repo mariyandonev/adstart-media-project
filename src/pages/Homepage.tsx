@@ -1,16 +1,15 @@
 import { useNavigate } from 'react-router';
-import { CustomButton, CustomInput } from '../components';
 import { useState, type ChangeEvent } from 'react';
+import { CustomButton, CustomInput } from '../components';
 import type { FieldInput } from '../components/CustomForm/Steps/types';
 import { useAuth } from '../context';
 
 const Homepage = () => {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { login, errorMessage, isLoading } = useAuth();
     const [isAdminFormOpen, setIsAdminFormOpen] = useState<boolean>(false);
     const [username, setUsername] = useState<FieldInput>({ value: '', errorMessage: '' });
     const [password, setPassword] = useState<FieldInput>({ value: '', errorMessage: '' });
-    const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (
         e: ChangeEvent<HTMLInputElement>,
@@ -40,42 +39,51 @@ const Homepage = () => {
             return;
         }
 
-        try {
-            setIsLoading(true);
-            await login(trimmedUser, trimmedPass);
+        const ok = await login(trimmedUser, trimmedPass);
+        if (ok) {
             navigate('/admin-page');
-
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (err: unknown) {
-            setPassword(prev => ({ ...prev, errorMessage: 'Invalid username or password' }));
-        } finally {
-            setIsLoading(false);
+        } else {
+            // error message is in context.error already — optionally show it
+            console.log('login failed:', errorMessage);
         }
     };
 
     return (
         <div className='mx-auto text-center'>
-            <h2 className='font-bold text-3xl mb-3'>Welcome to Brix <span className='text-[#4A3AFF]'>Templates</span></h2>
+            <h2 className='font-bold text-3xl mb-3'>
+                Welcome to Brix <span className='text-primary1'>Templates</span>
+            </h2>
+
             <div className='flex gap-5 justify-center items-center mt-8'>
-                {isAdminFormOpen ?
+                {isAdminFormOpen ? (
                     <svg
                         onClick={() => setIsAdminFormOpen(false)}
                         xmlns='http://www.w3.org/2000/svg'
                         fill='none'
                         viewBox='0 0 24 24'
-                        stroke-width='1.5'
+                        strokeWidth='1.5'
                         stroke='currentColor'
-                        className='size-13 border-3 hover:cursor-pointer hover:opacity-75 rounded-full border-[#4A3AFF]'
+                        className='size-13 border-3 hover:cursor-pointer hover:opacity-75 rounded-full border-primary1'
                     >
-                        <path stroke-linecap='round' stroke-linejoin='round' d='M6 18 18 6M6 6l12 12' />
+                        <path strokeLinecap='round' strokeLinejoin='round' d='M6 18 18 6M6 6l12 12' />
                     </svg>
-                    :
-                    <CustomButton buttonType='secondary' label='Admin Page' onClick={() => setIsAdminFormOpen(true)} />
-                }
-                <CustomButton buttonType='primary' label='Get project quote' onClick={() => navigate('/get-quote')} />
+                ) : (
+                    <CustomButton
+                        buttonType='secondary'
+                        label='Admin Page'
+                        onClick={() => setIsAdminFormOpen(true)}
+                    />
+                )}
+
+                <CustomButton
+                    buttonType='primary'
+                    label='Get project quote'
+                    onClick={() => navigate('/get-quote')}
+                />
             </div>
-            {isAdminFormOpen &&
-                <div className='flex flex-col items-center'>
+
+            {isAdminFormOpen && (
+                <div className='flex flex-col items-center mt-8'>
                     <div className='flex gap-5 justify-center items-center my-8 flex-col'>
                         <CustomInput
                             type='text'
@@ -98,16 +106,20 @@ const Homepage = () => {
                             classes='p-3'
                         />
                     </div>
+
                     <CustomButton
                         label={isLoading ? 'Logging in...' : 'Login'}
                         buttonType='small'
                         onClick={handleLogin}
+                        isDisabled={isLoading}
                         classes='px-8'
                     />
+
+                    {errorMessage && <p className='mt-4 text-red-600 text-xl'>{errorMessage}</p>}
                 </div>
-            }
+            )}
         </div>
-    )
-}
+    );
+};
 
 export default Homepage;

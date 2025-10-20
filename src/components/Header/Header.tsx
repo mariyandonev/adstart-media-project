@@ -5,7 +5,7 @@ import { CustomButton } from '../CustomButton';
 
 const Header = () => {
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { isAuthenticated, logout } = useAuth();
 
     const handleLogout = async () => {
         logout();
@@ -20,7 +20,7 @@ const Header = () => {
                 alt='brix-logo'
                 className='h-10 md:h-[41px] w-auto md:w-[305px] hover:cursor-pointer mb-4 md:mb-0'
             />
-            {user && <CustomButton label='Logout' buttonType='small' onClick={handleLogout} />}
+            {isAuthenticated && <CustomButton label='Logout' buttonType='small' onClick={handleLogout} />}
         </header>
     )
 }

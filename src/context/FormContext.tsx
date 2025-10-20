@@ -28,7 +28,7 @@ interface FormProviderProps {
 }
 
 export const FormProvider = ({ children }: FormProviderProps) => {
-    const [hasError, setHasError] = useState(true);
+    const [hasError, setHasError] = useState<boolean>(true);
     const [formData, setFormData] = useState<FormData>({
         step1: {
             name: { value: '', errorMessage: '' },

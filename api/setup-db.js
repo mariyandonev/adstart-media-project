@@ -1,11 +1,11 @@
-import { exec } from "child_process";
-import dotenv from "dotenv";
+import { exec } from 'child_process';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
 const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME } = process.env;
 
-const createDbCmd = `mysql -u ${DB_USER} -p${DB_PASSWORD} -h ${DB_HOST} -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;"`;
+const createDbCmd = `mysql -u ${DB_USER} -p${DB_PASSWORD} -h ${DB_HOST} -e 'CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;'`;
 
 exec(createDbCmd, (error, stdout, stderr) => {
     if (error) {
@@ -29,6 +29,6 @@ exec(createDbCmd, (error, stdout, stderr) => {
         if (stderr2) {
             console.error(`MySQL stderr: ${stderr2}`);
         }
-        console.log("Schema imported successfully.");
+        console.log('Schema imported successfully.');
     });
 });

@@ -42,6 +42,7 @@ const Step3 = ({ data, onChange }: Step3Props) => {
               label={el}
               value={el}
               checked={selected === el}
+              onChange={() => setSelected(el)}
             />
           </div>
         ))}
