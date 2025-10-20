@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "moduleResolution": "node",
+    "module": "esnext",
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "noEmit": false
+  },
+  "include": ["src/**/*", "__tests__/**/*", "src/jest.setup.ts", "jest.config.js"]
+}
